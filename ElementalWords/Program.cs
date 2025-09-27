@@ -15,8 +15,21 @@ if (result == null || result.Count == 0)
 }
 else
 {
-    foreach (var combination in result)
+    Console.WriteLine("{");
+
+    for (int i = 0; i < result.Count; i++)
     {
-        Console.WriteLine(string.Join(", ", combination));
+        var combination = result[i];
+
+        if (i == result.Count - 1)
+        {
+            Console.WriteLine(string.Format("\t{{ {0} }}", string.Join(", ", combination)));
+        }
+        else
+        {
+            Console.WriteLine("\t{{ {0} }},", string.Join(", ", combination));
+        }
     }
+
+    Console.WriteLine("}");
 }

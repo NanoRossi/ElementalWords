@@ -133,4 +133,22 @@ public class ElementalWordCalculatorTests
         result[2][1].ShouldBe("Actinium (Ac)");
         result[2][2].ShouldBe("Potassium (K)");
     }
+
+    [Fact]
+    public void Calculate_WordFailsMiddway()
+    {
+        // Want to confirm that if we have a word that matches one path
+        // But then fails on a following char, we don't return a partial result
+        // Xe is Xenon
+        // But R, Ro and Rox are not elements
+        // Arrange
+        var input = "Xerox";
+
+        // Act
+        var result = _calculator.Calculate(input);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeEmpty();
+    }
 }

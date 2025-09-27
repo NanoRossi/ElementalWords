@@ -1,8 +1,4 @@
-﻿using System;
-using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace ElementalWords;
+﻿namespace ElementalWords;
 
 /// <summary>
 /// Class to calculate all possible combinations of element symbols that can form a given word.
@@ -67,7 +63,7 @@ public class ElementalWordCalculator
         {
             // if we're here, the string is longer than 1 char
             // meaning we need to recurse
-            // before that we need to test against the first, the first two and the first two chars
+            // before that we need to test against the first, the first two and the first three chars
             // As any one of them could be a chemical element symbol match
             var firstElemString = GetElementString(input[..1]);
 
