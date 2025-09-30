@@ -5,7 +5,7 @@ Console.WriteLine("Enter a word:");
 
 var input = Console.ReadLine();
 
-var result = new ElementalWordCalculator().Calculate(input);
+var result = new ElementalWordCalculator().ElementalForms(input);
 
 Console.WriteLine("Possible combinations of element symbols:");
 

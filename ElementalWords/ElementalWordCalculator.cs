@@ -5,7 +5,7 @@
 /// </summary>
 public class ElementalWordCalculator
 {
-    private Dictionary<string, string> _elements;
+    private readonly Dictionary<string, string> _elements;
 
     public ElementalWordCalculator()
     {
@@ -17,86 +17,89 @@ public class ElementalWordCalculator
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public List<List<string>> Calculate(string? input)
+    public List<List<string>> ElementalForms(string? word)
     {
-        List<List<string>> results = [];
+        List<List<string>> forms = [];
 
         // Exit early if we've nothing to check
-        if (string.IsNullOrWhiteSpace(input))
+        if (string.IsNullOrWhiteSpace(word))
         {
-            return results;
+            return forms;
         }
 
-        GetPaths(results, input, []);
+        GetPaths(forms, word, []);
 
-        return results;
+        return forms;
     }
 
-    private List<List<string>> GetPaths(List<List<string>> results, string input, List<string> currentPath)
+    /// <summary>
+    /// Recurse through the string, checking for element symbol matches against the start of the string
+    /// </summary>
+    /// <param name="forms"></param>
+    /// <param name="word"></param>
+    /// <param name="currentPath"></param>
+    /// <returns></returns>
+    private List<List<string>> GetPaths(List<List<string>> forms, string word, List<string> currentPath)
     {
-        if (string.IsNullOrEmpty(input))
+        if (string.IsNullOrEmpty(word))
         {
-            // if the string is now empty, we have reached the end of the string and processed every char successfully
-            // so we can now add it to our results
+            // if the string is empty, we have reached the end of the string and processed every char successfully
+            // so we can now add it to our forms
             if (currentPath != null && currentPath.Count > 0)
             {
-                results.Add(currentPath);
+                forms.Add(currentPath);
             }
 
-            return results; 
+            return forms; 
         }
 
-        var strLength = input.Length;
+        var strLength = word.Length;
 
-        // if string length is 1 we just need to check the char itself
-        if (strLength == 1)
+        // We have already confirmed the string is not null or empty
+        // So we can safely check the first char of it to see if its a chemical symbol
+        CheckChar(forms, word, currentPath, 1);
+
+        // We can now check for 2 and 3 char element symbols
+        // using the same logic as above, split it off and recurse with the remainder
+        if (strLength > 1)
         {
-            var elemString = GetElementString(input);
-
-            if (!string.IsNullOrEmpty(elemString))
-            {
-                currentPath.Add(elemString);
-                return GetPaths(results, "", currentPath);
-            }
+            CheckChar(forms, word, currentPath, 2);
         }
-        else
+
+        if (strLength > 2)
         {
-            // if we're here, the string is longer than 1 char
-            // meaning we need to recurse
-            // before that we need to test against the first, the first two and the first three chars
-            // As any one of them could be a chemical element symbol match
-            var firstElemString = GetElementString(input[..1]);
-
-            if (!string.IsNullOrEmpty(firstElemString))
-            {
-                var newPath = CreateNewPathList(currentPath, firstElemString);
-                GetPaths(results, input[1..], newPath);
-            }
-
-            var secondElemString = GetElementString(input[..2]);
-
-            if (!string.IsNullOrEmpty(secondElemString))
-            {
-                var newPath = CreateNewPathList(currentPath, secondElemString);
-                GetPaths(results, input[2..], newPath);
-            }
-
-            if (strLength > 2)
-            {
-                var thirdElemString = GetElementString(input[..3]);
-
-                if (!string.IsNullOrEmpty(thirdElemString))
-                {
-                    var newPath = CreateNewPathList(currentPath, thirdElemString);
-                    GetPaths(results, input[2..], newPath);
-                }
-            }
+            CheckChar(forms, word, currentPath, 3);
         }
 
-        return results;
+        return forms;
     }
 
-    private List<string> CreateNewPathList(List<string> currentPath, string newPathItem)
+    /// <summary>
+    /// Compare the start of the string to the element dictionary
+    /// If a match is found, create a new path list and recurse with the remainder of the string
+    /// </summary>
+    /// <param name="forms"></param>
+    /// <param name="word"></param>
+    /// <param name="currentPath"></param>
+    /// <param name="charIndex"></param>
+    private void CheckChar(List<List<string>> forms, string word, List<string> currentPath, int charIndex)
+    {
+        var elemString = GetElementString(word[..charIndex]);
+
+        if (!string.IsNullOrEmpty(elemString))
+        {
+            var newPath = CreateNewPathList(currentPath, elemString);
+            GetPaths(forms, word[charIndex..], newPath);
+        }
+    }
+
+    /// <summary>
+    /// Create a new list based on the current path and add the new path item to it
+    /// </summary>
+    /// <param name="currentPath"></param>
+    /// <param name="newPathItem"></param>
+    /// <returns></returns>
+    private static List<string> CreateNewPathList(List<string> currentPath, string newPathItem)
     {
         return [
             .. currentPath,                         
@@ -126,7 +129,7 @@ public class ElementalWordCalculator
     /// TODO: could move this to a file? 
     /// </summary>
     /// <returns></returns>
-    private Dictionary<string, string> BuildElementLookup()
+    private static Dictionary<string, string> BuildElementLookup()
     {
         return new Dictionary<string, string>()
         {
@@ -246,7 +249,7 @@ public class ElementalWordCalculator
             { "Fl", "Flerovium" },
             { "Uup", "ununpentium" },
             { "Lv", "Livermorium" },
-            { "Uus", "ununseptium" },
+            { "Uus", "Ununseptium" },
             { "Uuo", "Ununoctium" },
             { "Uue", "Ununennium" }
         };
